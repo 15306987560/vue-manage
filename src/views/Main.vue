@@ -29,14 +29,13 @@ export default{
 </script>
 
 <style lang="scss" scoped>
-  .el-aside{
-    background-color: #545c64;
-  }
+.el-header {
+  background-color: #333;
+  padding: 0;
+}
+.el-main {
+   padding:0 20px 20px;
+}
 
-  .el-header{
-    background-color: #333;
-    padding: 0;
-    height: 60px;
-  }
 </style>
 
