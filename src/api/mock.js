@@ -15,3 +15,9 @@ Mock.mock('/api/home/getData','get',homeApi.getStatisticalData)
 Mock.mock(/api\/permission\/getMenu/,'post',permission.getMenu)
 // 用户数据请求
 Mock.mock(/api\/user\/get/,'get',user.getUserList)
+//新增用户数据
+Mock.mock(/api\/user\/add/,'post',user. createUser)
+// 修改用户数据
+Mock.mock('/api/user/edit','post',user.updateUser)
+// 删除数据
+Mock.mock('/api/user/del','post',user.deleteUser)

@@ -2,7 +2,13 @@
   <div class="manage">
     <!-- 表单 -->
     <el-dialog title="提示" :visible.sync="dialogFormVisible" width="50%">
-      <el-form :model="form" :inline="true" label-width="80px" :rules="rules">
+      <el-form
+        :model="form"
+        :inline="true"
+        label-width="80px"
+        :rules="rules"
+        ref="form"
+      >
         <el-form-item label="姓名" prop="name">
           <el-input
             v-model="form.name"
@@ -29,6 +35,7 @@
             placeholder="出生日期"
             v-model="form.birth"
             style="width: 100%"
+            value-format="yyyy-MM-DD"
           ></el-date-picker>
         </el-form-item>
         <el-form-item label="地址" prop="addr">
@@ -41,21 +48,17 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogFormVisible = false"
-          >确 定</el-button
-        >
+        <el-button type="primary" @click="submitData(0)">确 定</el-button>
       </div>
     </el-dialog>
     <!-- 表单弹出及搜索 -->
     <div class="form-search">
-      <el-button type="primary" @click="dialogFormVisible = true"
-        >+新增</el-button
-      >
+      <el-button type="primary" @click="callform(0)">+新增</el-button>
       <el-form class="search" inline>
         <el-form-item>
-          <el-input placeholder="请输入名称" label-width="208px"></el-input>
+          <el-input placeholder="请输入名称" label-width="208px" v-model="userForm.name"></el-input>
         </el-form-item>
-        <el-button type="primary" style="margin-right: 10px">查询</el-button>
+        <el-button type="primary" style="margin-right: 10px" @click="getList(1)">查询</el-button>
       </el-form>
     </div>
     <div class="data-table">
@@ -72,7 +75,7 @@
         <el-table-column prop="addr" label="地址"> </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
-            <el-button size="mini" @click="handleEdit(scope.row)"
+            <el-button size="mini" @click="callform(1,scope.row)"
               >编辑</el-button
             >
             <el-button
@@ -85,21 +88,26 @@
         </el-table-column>
       </el-table>
       <div class="pager">
-        <el-pagination layout="prev, pager, next" :total="count" style="float:right"></el-pagination>
+        <el-pagination
+          layout="prev, pager, next"
+          :total="count"
+          style="float: right" 
+          @current-change="handlePage"
+        ></el-pagination>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { getUser } from "../api/index";
+import { getUser, addUser, delUser, editUser } from "../api/index";
 export default {
   data() {
     return {
       dialogTableVisible: false,
       dialogFormVisible: false,
       form: {
-        name: "",
+        name: "1",
         age: "",
         sex: "",
         birth: "",
@@ -118,28 +126,96 @@ export default {
       },
       // 用户展示数据
       tableData: [],
-      count:10,//总条数
+      //总条数
+      count: 10,
       // 首次请求的页码和条数
       pageData: {
         page: 1,
         limit: 10,
       },
+      //打开的是新增还是编辑
+      // 0新增，1编辑
+      type:'',
       userForm: {
         name: "",
       },
     };
   },
   methods: {
-    getList() {
-      console.log("加载用户数据");
+    //请求获取用户数据
+    getList(type) {
+      if(type!==2)this.pageData.page = 1
+      if(type !== 1) this.userForm.name = ''
       getUser({ params: { ...this.userForm, ...this.pageData } }).then(
         ({ data }) => {
-          console.log(data)
-          this.count = data.count
+          console.log(data);
+          this.count = data.count;
           this.tableData = data.list;
         }
       );
     },
+    //调用用户表单控件
+    callform(type,row) {
+      this.dialogFormVisible = true;
+      this.type = type
+      if (type == 0) {
+        //0表示新增，需清空数据
+        this.form = {
+          name: "",
+          age: "",
+          sex: "",
+          birth: "",
+          addr: "",
+        };
+      }else{
+        this.form = row
+      }
+    },
+    //提交表单数据
+    submitData() {
+      this.$refs.form.validate((vali) => {
+        if (vali && this.type == 0) {
+          //0表示为新增数据
+          addUser(this.form).then((data) => {
+            //插入数据成功，关闭窗口，刷新页面
+            this.dialogFormVisible = false;
+            this.getList()
+          });
+        }else if(vali && this.type == 1){
+            editUser(this.form).then(data => {
+              this.dialogFormVisible = false;
+              this.getList(1)
+            })
+        }
+      });
+    },
+    // 删除指定用户数据
+    handleDelete(row) {
+      this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          delUser({id:row.id}).then(data => {
+            this.$message({
+            type: 'success',
+            message: '删除成功!'
+          });
+          // 删除成功刷新页面
+           this.getList()
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });          
+        });
+    },
+    // 换页
+    handlePage(val){
+      this.pageData.page = val 
+      this.getList(2)
+    }
   },
   mounted() {
     // 页面开始加载时，请求10条数据
@@ -156,12 +232,12 @@ export default {
     justify-content: space-between;
     align-items: center;
   }
-  .data-table{
+  .data-table {
     position: relative;
     height: calc(100% - 60px);
-    .pager{
-      position:absolute;
-      bottom: 50px;
+    .pager {
+      position: absolute;
+      bottom: px;
       right: 20px;
     }
   }

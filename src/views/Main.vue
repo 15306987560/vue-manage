@@ -1,6 +1,6 @@
 <template>
   <div class="main-view">
-    <el-container style="height:100vh">
+    <el-container style="height:100%">
       <el-aside width="auto">
         <component-aside/>
       </el-aside>

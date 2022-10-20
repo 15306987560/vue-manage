@@ -1,7 +1,7 @@
 <template>
   <div class="component-header">
     <div class="l-content">
-      <el-button type="primary" icon="el-icon-menu" size="mini"></el-button>
+      <el-button type="primary" icon="el-icon-menu" size="mini" @click="showMenu"></el-button>
       <el-breadcrumb separator-class="el-icon-arrow-right">
         <el-breadcrumb-item
           v-for="item in tags"
@@ -12,13 +12,13 @@
       </el-breadcrumb>
     </div>
     <div class="r-content">
-      <el-dropdown>
+      <el-dropdown @command="quitLogin">
         <span class="el-dropdown-link">
-          <img src="../assets/images/user.png" alt="">
+          <img src="../assets/images/user.png" alt="" />
         </span>
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item>个人中心</el-dropdown-item>
-          <el-dropdown-item>退出</el-dropdown-item>
+          <el-dropdown-item command="quitLogin">退出</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
     </div>
@@ -29,6 +29,20 @@ import { mapState } from "vuex";
 export default {
   data() {
     return {};
+  },
+  methods: {
+    //展开或收起菜单
+    showMenu(){
+      this.$store.commit('updataCollapse')
+    },
+    //退出登录
+    quitLogin(val) {
+      if (val == "quitLogin") {
+        //调用vuex中的deleteData方法，退出登录
+        this.$store.commit("deleteData");
+        this.$router.push("/login");
+      }
+    },
   },
   computed: {
     // 通过监听属性获取tab状态树中的面包屑数据
@@ -48,7 +62,7 @@ export default {
   align-items: center;
   padding: 0 20px;
   .l-content {
-    display:flex;
+    display: flex;
     align-items: center;
     .el-button {
       background-color: #fff;
@@ -78,8 +92,8 @@ export default {
       }
     }
   }
-  .r-content{
-    img{
+  .r-content {
+    img {
       width: 40px;
       height: 40px;
       border-radius: 50%;

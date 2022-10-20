@@ -20,3 +20,20 @@ export const getUser = (data) =>{
   return  http.get('/user/get',data)
   
 }
+
+
+//新增用户数据
+export const addUser = (data) => {
+  return http.post('/user/add',data)
+}
+
+//修改用户数据
+export const editUser = (data) => {
+  return http.post('/user/edit',data)
+}
+
+
+//删除用户数据
+export const delUser = (data) => {
+  return http.post('/user/del',data)
+}
