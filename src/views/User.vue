@@ -62,11 +62,10 @@
       <el-table :data="tableData" stripe style="width: 100%">
         <el-table-column prop="name" label="姓名" width="180">
         </el-table-column>
-        <el-table-column prop="age" label="年龄" width="180">
-        </el-table-column>
+        <el-table-column prop="age" label="年龄" width="180"> </el-table-column>
         <el-table-column prop="sex" label="性别">
           <template slot-scope="scope">
-            <span>{{scope.row.sex?'男':'女'}}</span>
+            <span>{{ scope.row.sex ? "男" : "女" }}</span>
           </template>
         </el-table-column>
         <el-table-column prop="birth" label="出生日期"> </el-table-column>
@@ -85,12 +84,15 @@
           </template>
         </el-table-column>
       </el-table>
+      <div class="pager">
+        <el-pagination layout="prev, pager, next" :total="count" style="float:right"></el-pagination>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import {getUser} from '../api/index'
+import { getUser } from "../api/index";
 export default {
   data() {
     return {
@@ -115,29 +117,34 @@ export default {
         addr: [{ required: true, message: "请输入地址", trigger: "blur" }],
       },
       // 用户展示数据
-      tableData:[],
+      tableData: [],
+      count:10,//总条数
       // 首次请求的页码和条数
       pageData: {
         page: 1,
         limit: 10,
       },
-      userForm:{
-        name:''
-      }
+      userForm: {
+        name: "",
+      },
     };
   },
-  methods:{
-    getList(){
-      console.log('加载用户数据')
-      getUser({params:{...this.userForm,...this.pageData}}).then(({data}) => {
-        this.tableData = data.list
-      })
-    }
+  methods: {
+    getList() {
+      console.log("加载用户数据");
+      getUser({ params: { ...this.userForm, ...this.pageData } }).then(
+        ({ data }) => {
+          console.log(data)
+          this.count = data.count
+          this.tableData = data.list;
+        }
+      );
+    },
   },
-  mounted(){
+  mounted() {
     // 页面开始加载时，请求10条数据
-    this.getList()
-  }
+    this.getList();
+  },
 };
 </script>
 
@@ -149,6 +156,14 @@ export default {
     justify-content: space-between;
     align-items: center;
   }
-
+  .data-table{
+    position: relative;
+    height: calc(100% - 60px);
+    .pager{
+      position:absolute;
+      bottom: 50px;
+      right: 20px;
+    }
+  }
 }
 </style>
