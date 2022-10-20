@@ -13,3 +13,5 @@ Mock.mock('/api/home/getData','get',homeApi.getStatisticalData)
 // 用户列表的数据
 //列表菜单数据(登录用户的权限不同，数据也不同)
 Mock.mock(/api\/permission\/getMenu/,'post',permission.getMenu)
+// 用户数据请求
+Mock.mock(/api\/user\/get/,'get',user.getUserList)

@@ -13,3 +13,10 @@ export const getMenu = (data) => {
   // const obj = await http.post('/permission/getMenu',data)
   return http.post('/permission/getMenu',data)
 }
+
+
+// 请求用户数据
+export const getUser = (data) =>{
+  return  http.get('/user/get',data)
+  
+}

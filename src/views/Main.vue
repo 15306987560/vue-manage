@@ -9,6 +9,7 @@
           <component-header/>
         </el-header>
         <el-main>
+          <component-tag/>
           <router-view></router-view>
         </el-main>
       </el-container>
@@ -18,8 +19,9 @@
 <script>
 import componentHeader from '@/components/componentHeader.vue'
 import ComponentAside from '@/components/componentAside.vue'
+import ComponentTag from '@/components/componentTag.vue'
 export default{
-  components: { componentHeader, ComponentAside },
+  components: { componentHeader, ComponentAside, ComponentTag },
   data(){
     return {
 
